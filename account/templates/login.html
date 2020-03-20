@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Login &mdash; Stisla</title>
+
+    {% include 'link_css.html' %}
+    <style>
+        .error-msg {
+            width: 100%;
+            margin-top: .25rem;
+            font-size: 80%;
+            color: #dc3545;
+        }
+    </style>
+
+    <!-- Start GA -->
+    {#    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>#}
+    {#    <script>#}
+    {#        window.dataLayer = window.dataLayer || [];#}
+    {##}
+    {#        function gtag() {#}
+    {#            dataLayer.push(arguments);#}
+    {#        }#}
+    {##}
+    {#        gtag('js', new Date());#}
+    {##}
+    {#        gtag('config', 'UA-94034622-3');#}
+    {#    </script>#}
+    <!-- /END GA --></head>
+
+<body>
+<div id="app">
+    <section class="section">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+                    <div class="login-brand">
+                        <img src="/static/stisla-2.2.0/img/stisla-fill.svg" alt="logo" width="100"
+                             class="shadow-light rounded-circle">
+                    </div>
+
+                    <div class="card card-primary">
+                        <div class="card-header"><h4>欢迎登录</h4></div>
+                        <!--action="javascript:void(0);" 不进行submit -->
+                        <form method="POST" action="javascript:void(0);" class="needs-validation" novalidate="">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="username">用户名</label>
+                                    <input id="username" type="text" class="form-control" name="username"
+                                           tabindex="1"
+                                           required autofocus>
+                                    <!--
+                                    <div class="invalid-feedback">
+                                        请填写用户名
+                                    </div>
+                                    -->
+                                     <span class="error-msg"></span>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label for="password">密 码</label>
+                                    <input id="password" type="password" class="form-control" name="password"
+                                           tabindex="1"
+                                           required autofocus>
+                                    <span class="error-msg"></span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-6">
+                                        <label for="v_code">验证码</label>
+                                        <input id="v_code" type="text" class="form-control" name="v_code" tabindex="1"
+                                               required autofocus>
+                                        <!--
+                                        <div class="invalid-feedback">
+                                            请填写验证码
+                                        </div>
+                                        -->
+                                        <span class="error-msg"></span>
+                                    </div>
+                                    <div class="col-6">
+
+                                        <img id="valid_img" alt="" style="margin-top: 28px;cursor:pointer"
+                                             src="{% url 'get_valid_img' %}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" name="remember" class="custom-control-input" tabindex="3"
+                                               id="remember-me">
+                                        <label class="custom-control-label" for="remember-me">记住我</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary btn-lg btn-block login" tabindex="4">
+                                        登录
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="mt-5 text-muted text-center">
+                还没有账号? <a href="{% url 'register' %}">马上注册</a>
+            </div>
+            <div class="simple-footer">
+                Copyright &copy; Stisla 2018
+            </div>
+        </div>
+
+
+</section>
+</div>
+
+{% include 'head_script.html' %}
+<script>
+    $(function () {
+        $("#valid_img").on("click", reloadVaildImg);
+
+        $(".login").on("click", login)
+
+    });
+
+    function reloadVaildImg() {
+         var timestamp = (new Date()).getTime();
+            $("#valid_img").attr("src","{% url 'get_valid_img' %}" + "?tc=" + timestamp)
+    }
+
+    function login() {
+
+        $("form input").each(function () {
+            $(this).removeClass("is-invalid")
+            $(this).next(".error-msg").text("")
+        })
+
+
+        let v_code = $("#v_code").val();
+        let pwd = $("#password").val();
+        let user = $("#username").val();
+        let token = $('input[name=csrfmiddlewaretoken]').val();
+
+        if (!v_code || !pwd || !user) {
+            return;
+        }
+        let data = {
+            username: user,
+            password: pwd,
+            v_code: v_code,
+            csrfmiddlewaretoken: token
+
+        };
+        $.ajax({
+            url: "",
+            dataType: "json",
+            data: data,
+            type: "post",
+            success: function (res) {
+                console.log("res", res)
+                if (res.code === -1) {
+                    $("form").removeClass("was-validated")
+                    reloadVaildImg()
+                    for (let k in res.msg) {
+                        let input = $(`input[name=${k}]`)
+                        input.addClass("is-invalid")
+                        input.next(".error-msg").text(res.msg[k][0])
+
+                        {#console.log($(`input[name=${k}]`).next(".error-msg"))#}
+                    }
+                    console.log("res.msg", res.msg)
+                }
+                else if (res.code === 1000){
+                    location.href="/"
+                }
+
+            }
+        })
+
+    }
+
+</script>
+</body>
+</html>
