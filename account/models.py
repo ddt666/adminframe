@@ -13,7 +13,7 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             username=username,
         )
-
+        print("usermanager")
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -32,7 +32,7 @@ class UserManager(BaseUserManager):
 
 class UserInfo(AbstractBaseUser):
     username = models.CharField(verbose_name="用户名", max_length=40, unique=True, db_index=True)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     email = models.EmailField(verbose_name="邮箱", max_length=255, null=True, blank=True)
     # nickname = models.CharField(max_length=64, null=True, blank=True)

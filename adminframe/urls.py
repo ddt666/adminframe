@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('account/' ,include("account.urls")),
 
-    path('', index),
+    path('', index,name='index'),
 
 ]
 

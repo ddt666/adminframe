@@ -34,14 +34,15 @@
                         <div class="card-header"><h4>Register</h4></div>
 
                         <div class="card-body">
-                            <form method="POST">
-
-                                  {% csrf_token %}
+                            <form method="POST" action="javascript:void(0);" class="needs-validation" novalidate="">
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="form-group col-6">
                                         <label for="email">邮箱</label>
-                                        <input id="email" type="email" class="form-control" name="email">
+                                        <input id="email" type="email" class="form-control" name="email"
+                                               placeholder="请输入邮箱" required autofocus>
                                         <div class="invalid-feedback">
+
                                         </div>
 
 
@@ -51,7 +52,7 @@
                                         <div class="input-group">
 
                                             <input id="email_code" type="text" class="form-control" name="email_code"
-                                                   placeholder="" aria-label="">
+                                                   placeholder="请输入邮箱验证码" aria-label="" required>
                                             <div class="input-group-append">
                                                 <button id="email_verify" class="btn btn-primary" type="button">获取验证码
                                                 </button>
@@ -62,25 +63,25 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="last_name">用户名</label>
-                                    <input id="last_name" type="text" class="form-control" name="last_name">
+                                    <label for="username">用户名</label>
+                                    <input id="username" type="text" class="form-control" name="username" required>
                                 </div>
 
 
                                 <div class="row">
                                     <div class="form-group col-6">
-                                        <label for="password" class="d-block">Password</label>
+                                        <label for="password" class="d-block">密码</label>
                                         <input id="password" type="password" class="form-control pwstrength"
-                                               data-indicator="pwindicator" name="password">
+                                               data-indicator="pwindicator" name="password" required>
                                         <div id="pwindicator" class="pwindicator">
                                             <div class="bar"></div>
                                             <div class="label"></div>
                                         </div>
                                     </div>
                                     <div class="form-group col-6">
-                                        <label for="password2" class="d-block">Password Confirmation</label>
+                                        <label for="password2" class="d-block">确认密码</label>
                                         <input id="password2" type="password" class="form-control"
-                                               name="password-confirm">
+                                               name="re_password" required>
                                     </div>
                                 </div>
 
@@ -94,8 +95,8 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary btn-lg btn-block">
-                                        Register
+                                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="register">
+                                        注册
                                     </button>
                                 </div>
                             </form>
@@ -121,30 +122,94 @@
 
 <!-- JS Libraies -->
 <script src="/static/stisla-2.2.0/modules/jquery-pwstrength/jquery.pwstrength.min.js"></script>
-<script src="/static/stisla-2.2.0/modules/jquery-selectric/jquery.selectric.min.js"></script>
+<script src="/static/stisla-2.2.0/modules/sweetalert/sweetalert.min.js"></script>
 
 <!-- Page Specific JS File -->
 <script src="/static/stisla-2.2.0/js/page/auth-register.js"></script>
 <script>
     $(function () {
-            $("#email_verify").on("click",getEmailCode)
-    })
+        $("#email_verify").on("click", getEmailCode)
+        $("#register").on("click", register)
+    });
 
+    var wait = 60;
+
+    function time(b) {
+        if (wait === 0) {
+            b.removeAttr("disabled");
+            b.text("获取验证码");
+            wait = 60;
+        } else {
+            b.attr("disabled", "disabled");
+            b.text("重新发送(" + wait + ")");
+            wait--;
+            setTimeout(function () {
+                    time(b)
+                },
+                1000)
+        }
+    }
+
+    //获取邮箱验证码
     function getEmailCode() {
 
-        let email = $("#email").val()
-         let token = $('input[name=csrfmiddlewaretoken]').val();
+
+        let email = $("#email").val();
+        let token = $('input[name=csrfmiddlewaretoken]').val();
         if (email.length === 0) {
             return;
         }
-        let data = {email: email,csrfmiddlewaretoken: token}
+
+
+        let data = {email: email, csrfmiddlewaretoken: token};
         $.ajax({
-            url: "/register",
+            url: "email_valid",
+            type: "post",
+            data: data,
+            success: function (res) {
+                if (res.code === 1000) {
+                    time($("#email_verify"));
+                } else {
+                    swal('提示', res.msg, 'error');
+                }
+            }
+
+        })
+    }
+
+    function register() {
+
+        console.log("注册")
+        let email = $("input[name=email]").val();
+        let email_code = $("input[name=email_code]").val();
+        let username = $("input[name=username]").val();
+        let password = $("input[name=password]").val();
+        let re_password = $("input[name=re_password]").val();
+        let token = $('input[name=csrfmiddlewaretoken]').val();
+        let data = {
+            email: email,
+            email_code: email_code,
+            username: username,
+            password: password,
+            re_password: re_password,
+            csrfmiddlewaretoken: token
+        };
+        $.ajax({
+            url: "{% url 'register' %}",
             type: "post",
             data: data,
             success: function (res) {
                 console.log(res)
+
+                if (res.code < 0) {
+                    swal('提示', res.msg[0], 'error');
+                }
+                else if(res.code===1000)
+                {
+                    location.href="{% url 'login' %}"
+                }
             }
+
 
         })
     }

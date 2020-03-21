@@ -1,11 +1,21 @@
 from django import forms
 from django.contrib import auth
 
+from . import models
+
 # from accounts.models import UserInfo, RoleList, PermissionList
 
 DEFAULT_CLASS = {'class': 'form-control'}
 VALID_CLASS = {'class': 'form-control is-valid'}
 INVALID_CLASS = {'class': 'form-control is-invalid'}
+
+
+class BootstrapBaseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 给实例对象的每一个字段添加class
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
 
 
 class LoginUserForm(forms.Form):
@@ -31,7 +41,8 @@ class LoginUserForm(forms.Form):
         # print(self.fields['username'].widget.attrs["class"], self.fields['username'].widget.attrs)
 
         if username and password:
-            self.user_cache = auth.authenticate(username=username, password=password)
+            print(username, password)
+            self.user_cache = auth.authenticate(self.request, username=username, password=password)
             if self.user_cache is None:
                 # self.fields['username'].widget.attrs.update(INVALID_CLASS)
                 # self.fields['username'].help_text = "账号密码不匹配"
@@ -46,3 +57,49 @@ class LoginUserForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+
+class RegisterForm(BootstrapBaseForm):
+    re_password = forms.CharField(
+        label='确认密码',
+        widget=forms.widgets.PasswordInput(),
+    )
+
+    class Meta:
+        model = models.UserInfo
+        fields = ["email", "username", "password", "re_password"]
+
+    # 验证邮箱
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        is_exist = models.UserInfo.objects.filter(email=email)
+        if is_exist:
+            self.add_error("email", "邮箱已被注册")
+            return forms.ValidationError("邮箱已被注册")
+        return email
+
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        if len(password) < 6:
+            # self.add_error("password", "密码不要少于6位")
+            raise forms.ValidationError("密码不要少于6位")
+        return password
+
+    # 验证用户名
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        is_exist = models.UserInfo.objects.filter(username=username)
+        if is_exist:
+            self.add_error("username", "用户名已被注册")
+            raise forms.ValidationError("用户名已被注册")
+        return username
+
+    # 验证密码
+    def clean(self):
+        pwd = self.cleaned_data.get("password")
+        re_pwd = self.cleaned_data.get("re_password")
+        if pwd == re_pwd:
+            return self.cleaned_data
+        else:
+            self.add_error("re_password", "两次密码不一致")
+            raise forms.ValidationError("两次密码不一致")

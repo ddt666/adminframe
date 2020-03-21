@@ -7,7 +7,6 @@ from django.conf import settings
 from PIL import Image, ImageDraw, ImageFont
 
 
-
 def get_valid(length=6, width=200, height=40):
     def get_random_color():
         """
@@ -51,11 +50,8 @@ def get_valid(length=6, width=200, height=40):
     return img_data, random_str.lower()
 
 
-
-
 def send_email_code(email_code, to_email_list):
-    res = send_mail("xxx-验证邮件", f"以下6位数字是邮箱验证码:{email_code}",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=to_email_list)
-
-    print("res", res)
+    status_code = send_mail("xxx-验证邮件", f"以下6位数字是邮箱验证码:{email_code}",
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=to_email_list)
+    return status_code

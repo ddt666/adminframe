@@ -12,4 +12,4 @@ class BaseResponse(object):
 
 if __name__ == '__main__':
     res=BaseResponse()
-    print(res)
+    print(res.dict)

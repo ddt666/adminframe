@@ -1,12 +1,14 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from django.http import JsonResponse
 from django.contrib import auth
+from django.urls import reverse
 
-from .forms import LoginUserForm
+from .forms import LoginUserForm, RegisterForm
 from account.utils.auth import get_valid
 from utils.response import BaseResponse
 from .utils.auth import send_email_code
 from .utils.common import get_random_int
+from . import models
 
 
 # Create your views here.
@@ -15,6 +17,11 @@ def index(request):
 
 
 def login(request):
+    print("request.user", request.user)
+
+    # 当session在有效期内，进入登录页面直接跳转到index页面
+    if request.user.is_authenticated:
+        return redirect(reverse('index'))
     if request.method == "POST":
         res = BaseResponse()
 
@@ -30,7 +37,7 @@ def login(request):
             form = LoginUserForm(request, data=request.POST)
             if form.is_valid():
                 auth.login(request, form.get_user())
-
+                print("request.user", request.user)
                 res.msg = "登录成功"
                 return JsonResponse(res.dict)
             else:
@@ -60,17 +67,61 @@ def register(request):
 
     if request.method == "POST":
         to_email = request.POST.get("email")
-        if to_email:
-            email_code = get_random_int()
-            ret = send_email_code(email_code, [to_email])
-            if ret == 1:
-                request.session['email_code'] = email_code
-                pass
-            else:
-                pass
+        email_code = request.POST.get("email_code")
 
-        return JsonResponse(res.dict)
+        # 验证邮箱与验证码是否匹配
+        if request.session["email_code"].get(to_email) != email_code:
+            res.code = -1
+            res.msg = "邮箱与验证码不匹配"
+            return JsonResponse(res.dict, json_dumps_params={'ensure_ascii': False})
+
+        form = RegisterForm(data=request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            print("密码", user.password)
+            user.set_password(user.password)
+            form.save()
+            res.msg = "用户创建成功"
+        else:
+            res.code = -1
+            # k,v=form.errors.items()[0]
+
+            # print(type(form.errors.values()))
+
+            for error in form.errors.values():
+                first_error = error[0]
+                break
+
+            res.msg = first_error
+        return JsonResponse(res.dict, json_dumps_params={'ensure_ascii': False})
     else:
-        pass
+        return render(request, "register.html")
 
-    return render(request, "register.html")
+
+# 邮箱验证码
+def email_valid(request):
+    res = BaseResponse()
+
+    if request.method == "POST":
+        to_email = request.POST.get("email")
+        if to_email:
+
+            is_exist = models.UserInfo.objects.filter(email=to_email)
+            if is_exist:
+                res.code = -1
+                res.msg = "邮箱已经注册了"
+                return JsonResponse(res.dict)
+
+            email_code = get_random_int(6)
+            ret = send_email_code(email_code, [to_email])
+
+            if ret == 1:
+                request.session['email_code'] = {to_email: email_code}
+                res.msg = "邮箱验证码发送成功"
+            else:
+                res.code = -1
+                res.msg = "邮箱验证码发送失败"
+        else:
+            res.code = -1
+            res.msg = "请填写正确邮箱"
+        return JsonResponse(res.dict)
