@@ -146,6 +146,8 @@
         let pwd = $("#password").val();
         let user = $("#username").val();
         let token = $('input[name=csrfmiddlewaretoken]').val();
+        let rmb=$('input[name=remember]').prop("checked");
+        //console.log("rmb",rmb)
 
         if (!v_code || !pwd || !user) {
             return;
@@ -154,6 +156,7 @@
             username: user,
             password: pwd,
             v_code: v_code,
+            remember:rmb,
             csrfmiddlewaretoken: token
 
         };
@@ -163,14 +166,14 @@
             data: data,
             type: "post",
             success: function (res) {
-                console.log("res", res)
+                console.log("res", res);
                 if (res.code === -1) {
-                    $("form").removeClass("was-validated")
+                    $("form").removeClass("was-validated");
                     reloadVaildImg()
                     for (let k in res.msg) {
-                        let input = $(`input[name=${k}]`)
-                        input.addClass("is-invalid")
-                        input.next(".error-msg").text(res.msg[k][0])
+                        let input = $(`input[name=${k}]`);
+                        input.addClass("is-invalid");
+                        input.next(".error-msg").text(res.msg[k][0]);
 
                         {#console.log($(`input[name=${k}]`).next(".error-msg"))#}
                     }

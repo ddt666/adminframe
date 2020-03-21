@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.http import JsonResponse
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from .forms import LoginUserForm, RegisterForm
@@ -12,16 +13,19 @@ from . import models
 
 
 # Create your views here.
+@login_required
 def index(request):
+    print(request.session.items())
+    print("request.user", request.user)
     return render(request, "index.html")
 
 
 def login(request):
-    print("request.user", request.user)
-
-    # 当session在有效期内，进入登录页面直接跳转到index页面
-    if request.user.is_authenticated:
-        return redirect(reverse('index'))
+    # print("request.user", request.user)
+    #
+    # # 当session在有效期内，进入登录页面直接跳转到index页面
+    # if request.user.is_authenticated:
+    #     return redirect(reverse('index'))
     if request.method == "POST":
         res = BaseResponse()
 
@@ -34,9 +38,19 @@ def login(request):
             # if user_obj:
             #     rbac.login(request,user_obj)
 
+            is_remember = request.POST.get('remember') == "True"
+
+            print("is_remember", is_remember)
             form = LoginUserForm(request, data=request.POST)
             if form.is_valid():
                 auth.login(request, form.get_user())
+
+                if is_remember:
+                    # session设置7天有效期
+                    request.session.set_expiry(7 * 24 * 60 * 60)
+                else:
+                    # 否则浏览器关闭session就失效
+                    request.session.set_expiry(0)
                 print("request.user", request.user)
                 res.msg = "登录成功"
                 return JsonResponse(res.dict)
