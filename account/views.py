@@ -56,7 +56,6 @@ def login(request):
                 return JsonResponse(res.dict)
             else:
                 res.code = -1
-
                 res.msg = form.errors
 
         else:
@@ -101,7 +100,7 @@ def register(request):
             # k,v=form.errors.items()[0]
 
             # print(type(form.errors.values()))
-
+            first_error = ""
             for error in form.errors.values():
                 first_error = error[0]
                 break
@@ -139,3 +138,7 @@ def email_valid(request):
             res.code = -1
             res.msg = "请填写正确邮箱"
         return JsonResponse(res.dict)
+
+
+def iforgot(request):
+    return render(request, 'iforgot.html')
