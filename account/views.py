@@ -1,13 +1,15 @@
+import uuid
+
 from django.shortcuts import render, HttpResponse, redirect
 from django.http import JsonResponse
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
-from .forms import LoginUserForm, RegisterForm
+from .forms import LoginUserForm, RegisterForm, IForgotForm, ResetPasswordForm
 from account.utils.auth import get_valid
 from utils.response import BaseResponse
-from .utils.auth import send_email_code
+from .utils.auth import send_email_code, send_reset_password_url
 from .utils.common import get_random_int
 from . import models
 
@@ -141,4 +143,46 @@ def email_valid(request):
 
 
 def iforgot(request):
-    return render(request, 'iforgot.html')
+    if request.method == "POST":
+        email = request.POST.get("email")
+        form = IForgotForm(data=request.POST)
+        is_send_success = False
+        if form.is_valid():
+            reset_code = ''.join(str(uuid.uuid4()).split("-"))
+            print("reset_valid", reset_code)
+            ret_code = send_reset_password_url(reset_code, email)
+            if ret_code == 1:
+                is_send_success = True
+                models.ResetPasswordCode.objects.create(code=reset_code, user=form.user_cached)
+                # request.session["reset_valid"] = {reset_code: form.user_cached.id}
+        else:
+            print(form.errors)
+    else:
+        form = IForgotForm()
+    return render(request, 'iforgot.html', locals())
+
+
+def reset_password(request, reset_code):
+    res = BaseResponse()
+    res.code = 0
+    if request.method == "POST":
+
+        reset = models.ResetPasswordCode.objects.filter(code=reset_code).first()
+        if reset:
+            user = reset.user
+            form = ResetPasswordForm(data=request.POST)
+            if form.is_valid():
+                user.set_password(form.cleaned_data.get("password"))
+                user.save()
+
+                reset.delete()
+
+                res.code = 1000
+                res.msg = "密码重置成功"
+            else:
+                res.code = -1
+                res.msg = "重置失败!"
+    else:
+        form = ResetPasswordForm()
+
+    return render(request, 'reset_password.html', locals())

@@ -6,9 +6,9 @@ from django.contrib.auth.models import AbstractUser, AbstractBaseUser, BaseUserM
 
 class UserManager(BaseUserManager):
     def create_user(self, email, username, password=None):
-        # if not email:
-        #     raise ValueError('Users must have an email address')
-        print("email",email)
+        if not email:
+            raise ValueError('Users must have an email address')
+        print("email", email)
         user = self.model(
             email=self.normalize_email(email),
             username=username,
@@ -34,7 +34,7 @@ class UserInfo(AbstractBaseUser):
     username = models.CharField(verbose_name="用户名", max_length=40, unique=True, db_index=True)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
-    email = models.EmailField(verbose_name="邮箱", max_length=255, null=True, blank=True)
+    email = models.EmailField(verbose_name="邮箱", max_length=255)
     # nickname = models.CharField(max_length=64, null=True, blank=True)
 
     objects = UserManager()
@@ -61,3 +61,9 @@ class UserInfo(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_superuser
+
+
+class ResetPasswordCode(models.Model):
+    user = models.ForeignKey(to="UserInfo", verbose_name="用户", on_delete=models.CASCADE)
+    code = models.CharField(verbose_name="随机验证码", max_length=128)
+    created = models.DateTimeField(verbose_name="发送时间", auto_now_add=True)

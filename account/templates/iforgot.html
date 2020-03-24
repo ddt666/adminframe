@@ -3,7 +3,8 @@
 {% block content %}
     <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
         <div class="login-brand">
-            <img src="/static/stisla-2.2.0/img/stisla-fill.svg" alt="logo" width="100" class="shadow-light rounded-circle">
+            <img src="/static/stisla-2.2.0/img/stisla-fill.svg" alt="logo" width="100"
+                 class="shadow-light rounded-circle">
         </div>
 
         <div class="card card-primary">
@@ -11,12 +12,17 @@
 
             <div class="card-body">
                 <p class="text-muted">我们将会发送一封重置密码链接的邮件到您的邮箱</p>
-                <form method="POST">
-                    <div class="form-group">
-                        <label for="email">邮箱</label>
-                        <input id="email" type="email" class="form-control" name="email" tabindex="1" required
-                               autofocus>
-                    </div>
+                <form method="POST" class="needs-validation" novalidate="">
+                    {% csrf_token %}
+                    {% for filed in form %}
+                        <div class="form-group">
+                            <label for="{{ filed.id_for_label }}">{{ filed.label }}</label>
+                            {{ filed }}
+                            <span class="error-msg">{{ filed.errors.0 }}</span>
+                        </div>
+
+                    {% endfor %}
+
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
@@ -28,4 +34,19 @@
         </div>
 
     </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        {% if is_send_success %}
+            swal(
+                '提示',
+                '发送成功',
+                'success'
+            ).then(function () {
+                location.href ="{% url 'login' %}"
+            });
+        {% endif %}
+
+    </script>
 {% endblock %}

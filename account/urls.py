@@ -10,4 +10,5 @@ urlpatterns = [
 
     path('email_valid', views.email_valid, name="email_valid"),
     path('iforgot', views.iforgot, name="iforgot"),
+    re_path('reset_password/(?P<reset_code>\w+)/', views.reset_password, name="reset_password"),
 ]
