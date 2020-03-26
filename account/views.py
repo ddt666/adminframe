@@ -70,6 +70,7 @@ def login(request):
     return render(request, "login.html", {"form": form})
 
 
+
 def get_valid_img(request):
     img_data, v_code = get_valid(length=5, width=135, height=40)
     request.session['v_code'] = v_code

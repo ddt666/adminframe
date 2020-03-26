@@ -20,8 +20,8 @@ from account.views import index
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('account/', include("account.urls")),
+    path('account/', include("account.urls",namespace="account")),
 
-    path('', index, name='index'),
+    re_path(r'^', include('web.urls', namespace='web')),
 
 ]
