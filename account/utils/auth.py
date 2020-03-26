@@ -55,3 +55,12 @@ def send_email_code(email_code, to_email_list):
                             from_email=settings.DEFAULT_FROM_EMAIL,
                             recipient_list=to_email_list)
     return status_code
+
+
+def send_reset_password_url(code, *args):
+    print("args",args)
+    status_code = send_mail("xxx-重置密码", f"若要开始重置密码,请点击以下链接:http://127.0.0.1:8000/account/reset_password/{code}",
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=args
+                            )
+    return status_code

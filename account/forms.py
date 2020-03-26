@@ -103,3 +103,76 @@ class RegisterForm(BootstrapBaseForm):
         else:
             self.add_error("re_password", "两次密码不一致")
             raise forms.ValidationError("两次密码不一致")
+
+
+class IForgotForm(BootstrapBaseForm):
+    class Meta:
+        model = models.UserInfo
+        fields = ["email"]
+        widgets = {
+            "email": forms.widgets.TextInput(attrs={"required": "required", "placeholder": "请输入注册的邮箱"})
+        }
+        error_messages = {
+            "email": {
+                "required": "不能为空",
+                "invalid": "邮箱格式错误"
+            }
+        }
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        user_obj = models.UserInfo.objects.filter(email=email).first()
+        if not user_obj:
+            self.add_error("email", "该邮箱没有注册账号")
+            raise forms.ValidationError("该邮箱没有注册账号")
+        else:
+            self.user_cached = user_obj
+        return email
+
+    def __init__(self, *args, **kwargs):
+        super(IForgotForm, self).__init__(*args, **kwargs)
+        self.user_cached = None
+
+
+class ResetPasswordForm(BootstrapBaseForm):
+    re_password = forms.CharField(
+        label='确认密码',
+        widget=forms.widgets.PasswordInput(),
+    )
+
+    class Meta:
+        model = models.UserInfo
+        fields = ["password", "re_password"]
+        widgets = {
+            'password': forms.widgets.PasswordInput(attrs={"class": "form-control pwstrength"})
+        }
+
+    # def clean_password(self):
+    #     password = self.cleaned_data.get("password")
+    #     if len(password) < 6:
+    #         # self.add_error("password", "密码不要少于6位")
+    #         raise forms.ValidationError("密码不要少于6位")
+    #     return password
+
+    # 验证密码
+    def clean(self):
+        pwd = self.cleaned_data.get("password")
+        if len(pwd) < 6:
+            self.add_error("password", "密码不要少于6位")
+            raise forms.ValidationError("密码不要少于6位")
+
+        re_pwd = self.cleaned_data.get("re_password")
+        if pwd == re_pwd:
+            return self.cleaned_data
+        else:
+            self.add_error("re_password", "两次密码不一致")
+            raise forms.ValidationError("两次密码不一致")
+
+    def __init__(self, *args, **kwargs):
+        super(ResetPasswordForm, self).__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            if field == "password":
+                self.fields[field].widget.attrs.update({
+                    'class': 'form-control pwstrength',
+                    'data-indicator': "pwindicator"
+                })
