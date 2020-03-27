@@ -22,3 +22,8 @@ def payment_list(request):
 
 def payment_add(request):
     return render(request, "payment_add.html")
+
+
+
+def my_customer_list(request):
+    return render(request,"")

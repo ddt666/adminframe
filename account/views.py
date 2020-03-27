@@ -58,7 +58,9 @@ def login(request):
 
                 res.msg = "登录成功"
 
-                # permission.init(request.user, request)
+                # 用户权限初始化
+                permission.init(request.user, request)
+
                 return JsonResponse(res.dict)
             else:
                 res.code = -1
