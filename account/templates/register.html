@@ -164,7 +164,7 @@
                 csrfmiddlewaretoken: token
             };
             $.ajax({
-                url: "{% url 'register' %}",
+                url: "{% url 'account:register' %}",
                 type: "post",
                 data: data,
                 success: function (res) {
@@ -173,7 +173,7 @@
                     if (res.code < 0) {
                         swal('提示', res.msg, 'error');
                     } else if (res.code === 1000) {
-                        location.href = "{% url 'login' %}"
+                        location.href = "{% url 'account:login' %}"
                     }
                 }
 

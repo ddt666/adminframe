@@ -43,7 +43,7 @@
                         <div class="d-block">
                             <label for="password" class="control-label">密码</label>
                             <div class="float-right">
-                                <a href="{% url 'iforgot' %}" class="text-small">
+                                <a href="{% url 'account:iforgot' %}" class="text-small">
                                     忘记密码?
                                 </a>
                             </div>
@@ -69,7 +69,7 @@
                         <div class="col-6">
 
                             <img id="valid_img" alt="" style="margin-top: 28px;cursor:pointer"
-                                 src="{% url 'get_valid_img' %}"/>
+                                 src="{% url 'account:get_valid_img' %}"/>
                         </div>
                     </div>
 
@@ -91,7 +91,7 @@
         </div>
 
         <div class="mt-5 text-muted text-center">
-            还没有账号? <a href="{% url 'register' %}">马上注册</a>
+            还没有账号? <a href="{% url 'account:register' %}">马上注册</a>
         </div>
     </div>
 
@@ -109,7 +109,7 @@
 
         function reloadVaildImg() {
             var timestamp = (new Date()).getTime();
-            $("#valid_img").attr("src", "{% url 'get_valid_img' %}" + "?tc=" + timestamp)
+            $("#valid_img").attr("src", "{% url 'account:get_valid_img' %}" + "?tc=" + timestamp)
         }
 
         function login() {

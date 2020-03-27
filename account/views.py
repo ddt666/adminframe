@@ -12,6 +12,7 @@ from utils.response import BaseResponse
 from .utils.auth import send_email_code, send_reset_password_url
 from .utils.common import get_random_int
 from . import models
+from rbac.service import permission
 
 
 # Create your views here.
@@ -54,7 +55,10 @@ def login(request):
                     # 否则浏览器关闭session就失效
                     request.session.set_expiry(0)
                 print("request.user", request.user)
+
                 res.msg = "登录成功"
+
+                # permission.init(request.user, request)
                 return JsonResponse(res.dict)
             else:
                 res.code = -1
@@ -68,7 +72,6 @@ def login(request):
     else:
         form = LoginUserForm(request)
     return render(request, "login.html", {"form": form})
-
 
 
 def get_valid_img(request):
