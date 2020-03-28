@@ -77,6 +77,7 @@ def init(user_obj, request):
                         "id": item["permissions__pk"],
                         "title": item["permissions__title"],
                         "url": item["permissions__url"],
+                        "alias": item["permissions__alias"],
                     }]
                 }
             else:
@@ -85,6 +86,7 @@ def init(user_obj, request):
                         "id": item["permissions__pk"],
                         "title": item["permissions__title"],
                         "url": item["permissions__url"],
+                        "alias": item["permissions__alias"],
                     }
                 )
 
@@ -95,8 +97,10 @@ def init(user_obj, request):
 
     permission_key = getattr(settings, "PERMISSION_SESSION_KEY", "permission_dict")
     menu_key = getattr(settings, "MENU_SESSION_KEY", "menu_dict")
-    request.seesion[permission_key] = permission_dict
-    request.seesion[menu_key] = menu_dict
+    request.session[permission_key] = permission_dict
+    request.session[menu_key] = menu_dict
+
+
 
 
 """

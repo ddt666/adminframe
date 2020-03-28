@@ -251,8 +251,26 @@
                 <div class="sidebar-brand sidebar-brand-sm">
                     <a href="index.html">St</a>
                 </div>
+                {% load rbac %}
+                {% show_menu request %}
+                 <ul class="sidebar-menu">
+                    {% for item in request.session.menu_dict.values %}
+                        <li class="dropdown">
+                            <a href="#" class="nav-link has-dropdown"><i
+                                    class="fas {{ item.icon }}"></i><span>{{ item.title }}</span></a>
+                            {% if item.children %}
+                                <ul class="dropdown-menu">
+                                    {% for child in item.children %}
+                                    <li><a class="nav-link" href=" {{ child.url }}">{{ child.title }}</a></li>
+
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
                 <ul class="sidebar-menu">
-                    <li class="menu-header">客户</li>
+{#                    <li class="menu-header">客户</li>#}
                     <li class="dropdown">
                         <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>客户管理</span></a>
                         <ul class="dropdown-menu">
@@ -261,7 +279,7 @@
                         </ul>
                     </li>
 
-                      <li class="menu-header">账单</li>
+                    <li class="menu-header">账单</li>
                     <li class="dropdown">
                         <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>账单管理</span></a>
                         <ul class="dropdown-menu">

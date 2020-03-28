@@ -1,0 +1,16 @@
+ <ul class="sidebar-menu">
+                    {% for item in menu_list %}
+                        <li class="{{ item.class }}">
+                            <a href="#" class="nav-link has-dropdown"><i
+                                    class="fas {{ item.icon }}"></i><span>{{ item.title }}</span></a>
+                            {% if item.children %}
+                                <ul class="dropdown-menu">
+                                    {% for child in item.children %}
+                                    <li class="{{ child.class }}"><a class="nav-link" href="{{ child.url }}">{{ child.title }}</a></li>
+
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
