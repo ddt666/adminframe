@@ -125,7 +125,7 @@ STATICFILES_DIRS = [
 ]
 
 # 不自动添加后缀
-# APPEND_SLASH = False
+APPEND_SLASH = False
 
 AUTH_USER_MODEL = 'account.Userinfo'
 LOGIN_URL = 'account/login'
@@ -150,9 +150,9 @@ MENU_SESSION_KEY = "menu_dict"
 
 # 权限白名单
 WHITE_URLS = [
-    '/account/login/',
-    '/account/reg/',
-    '/account/get_valid_img/',
+    '/account/login',
+    '/account/reg',
+    '/account/get_valid_img',
     '/static/.*',
     '/admin/.*',
     '/'
