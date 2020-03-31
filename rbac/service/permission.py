@@ -62,6 +62,7 @@ def init(user_obj, request):
             "alias": item["permissions__alias"],
             "pid": item["permissions__parent_id"],
             "p_alias": item["permissions__parent__alias"],
+            "is_menu": item["permissions__is_menu"]
 
         }
 
@@ -90,7 +91,7 @@ def init(user_obj, request):
                     }
                 )
 
-    print(permission_dict)
+    print("++++permission_dict", permission_dict)
 
     print("=" * 100)
     print(menu_dict)
@@ -99,8 +100,6 @@ def init(user_obj, request):
     menu_key = getattr(settings, "MENU_SESSION_KEY", "menu_dict")
     request.session[permission_key] = permission_dict
     request.session[menu_key] = menu_dict
-
-
 
 
 """

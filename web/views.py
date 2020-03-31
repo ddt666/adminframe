@@ -9,6 +9,7 @@ def index(request):
 
 
 def customer_list(request):
+    print("c"*120)
     return render(request, "customer_list.html")
 
 
@@ -24,6 +25,6 @@ def payment_add(request):
     return render(request, "payment_add.html")
 
 
-
 def my_customer_list(request):
-    return render(request,"")
+    print("hhhhhhhhhhhhhhhhhh"*10)
+    return render(request, "my_customer_list.html")

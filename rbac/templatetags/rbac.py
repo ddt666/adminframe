@@ -19,10 +19,17 @@ def show_menu(request):
     for menu in menu_list:
         menu["class"] = "dropdown"
         for child in menu["children"]:
-            if re.match(r'^{}$'.format(child["url"]), request.path_info):
-                child["class"] = "active"
-                menu["class"] += " active"
-                break
+
+            if hasattr(request, "current_menu_id"):
+                if str(request.current_menu_id) == str(child.get("id")):
+                    child["class"] = "active"
+                    menu["class"] += " active"
+                    break
+
+            # if re.match(r'^{}$'.format(child["url"]), request.path_info):
+            #     child["class"] = "active"
+            #     menu["class"] += " active"
+            #     break
     print("menu_list", menu_list)
 
     return {'menu_list': menu_list}

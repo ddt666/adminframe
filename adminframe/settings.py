@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rbac.service.middleware.PermissionMiddleware'
 ]
 
 ROOT_URLCONF = 'adminframe.urls'
@@ -123,6 +124,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 
+# 不自动添加后缀
+# APPEND_SLASH = False
+
 AUTH_USER_MODEL = 'account.Userinfo'
 LOGIN_URL = 'account/login'
 # 邮箱配置
@@ -137,6 +141,20 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SESSION_SAVE_EVERY_REQUEST = True
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-
+# 权限组件的相关配置
+# session中权限的key
 PERMISSION_SESSION_KEY = "permission_dict"
+
+# session中菜单的key
 MENU_SESSION_KEY = "menu_dict"
+
+# 权限白名单
+WHITE_URLS = [
+    '/account/login/',
+    '/account/reg/',
+    '/account/get_valid_img/',
+    '/static/.*',
+    '/admin/.*',
+    '/'
+
+]

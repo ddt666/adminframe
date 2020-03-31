@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>
-        customer_list
-    </h1>
+    <div>
+    <a class="btn btn-primary" href="{% url 'web:customer_add' %}">添加客户</a>
+    <a class="btn btn-primary" href="{% url 'web:customer_add' %}">添加客户</a>
+        <h1>
+            customer_list
+        </h1>
+    </div>
 {% endblock %}
