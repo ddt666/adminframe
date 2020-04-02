@@ -68,6 +68,7 @@ def init(user_obj, request):
 
         menu_pk = item["permissions__menu_id"]
 
+        # menu_pk 如果有值，就是子菜单
         if menu_pk:
             if menu_pk not in menu_dict:
                 menu_dict[menu_pk] = {
@@ -90,6 +91,7 @@ def init(user_obj, request):
                         "alias": item["permissions__alias"],
                     }
                 )
+
 
     print("++++permission_dict", permission_dict)
 

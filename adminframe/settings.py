@@ -101,6 +101,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# 以下为自定制
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 # LANGUAGE_CODE = 'en-us'
@@ -125,7 +127,7 @@ STATICFILES_DIRS = [
 ]
 
 # 不自动添加后缀
-APPEND_SLASH = False
+# APPEND_SLASH = False
 
 AUTH_USER_MODEL = 'account.Userinfo'
 LOGIN_URL = 'account/login'
@@ -150,7 +152,9 @@ MENU_SESSION_KEY = "menu_dict"
 
 # 权限白名单
 WHITE_URLS = [
+
     '/account/login',
+    '/account/logout',
     '/account/reg',
     '/account/get_valid_img',
     '/static/.*',

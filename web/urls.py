@@ -11,4 +11,6 @@ urlpatterns = [
     re_path('payment/list', views.payment_list, name='payment_list'),
     re_path('payment/add', views.payment_add, name='payment_add'),
 
+    re_path('single_menu', views.single_menu, name='single_menu'),
+
 ]

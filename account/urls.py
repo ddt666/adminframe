@@ -6,6 +6,7 @@ app_name = "account"
 urlpatterns = [
 
     path('login', views.login, name="login"),
+    path('logout', views.logout, name="logout"),
 
     path('get_valid_img', views.get_valid_img, name="get_valid_img"),
 

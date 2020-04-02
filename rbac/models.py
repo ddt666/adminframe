@@ -13,6 +13,8 @@ class Menu(models.Model):
     icon = models.CharField(max_length=32, verbose_name='图标', null=True, blank=True)
     weight = models.IntegerField(default=10, verbose_name='权重')
 
+    # is_single = models.BooleanField(verbose_name="是否是单独菜单",default=False)
+
     # url = models.CharField(max_length=32, verbose_name='菜单url', null=True, blank=True)
 
     class Meta:

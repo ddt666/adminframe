@@ -28,3 +28,6 @@ def payment_add(request):
 def my_customer_list(request):
     print("hhhhhhhhhhhhhhhhhh"*10)
     return render(request, "my_customer_list.html")
+
+def single_menu(request):
+    return render(request ,'')

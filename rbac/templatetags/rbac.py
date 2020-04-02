@@ -33,3 +33,17 @@ def show_menu(request):
     print("menu_list", menu_list)
 
     return {'menu_list': menu_list}
+
+
+# 自定义filter 实现按钮是否显示
+@register.filter()
+def has_permission(request, value):
+    key = getattr(settings, 'PERMISSION_SESSION_KEY', 'permission_dict')
+    # 3. 当前登陆的这个人他的权限列表是什么
+    print("value", value)
+    permission_dict = request.session.get(key, {})
+    for item in permission_dict.values():
+        if value == item["alias"]:
+            return True
+    else:
+        return False

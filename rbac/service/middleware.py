@@ -19,7 +19,7 @@ class PermissionMiddleware(MiddlewareMixin):
                 return
 
         permission_key = getattr(settings, "PERMISSION_SESSION_KEY", "permission_dict")
-        permission_dict = request.session.get(permission_key, [])
+        permission_dict = request.session.get(permission_key, {})
         print("-----取permission_dict", permission_dict)
         for k, v in permission_dict.items():
             if re.match(r'^{}$'.format(v['url']), current_url):
