@@ -20,7 +20,7 @@ class PermissionMiddleware(MiddlewareMixin):
             if re.match(r'^{}$'.format(url), current_url):
                 return
         if not request.user.is_authenticated:
-            return redirect(reverse("account:login"))
+            return redirect(reverse("account:login")+f"?next={request.path_info}")
         permission_key = getattr(settings, "PERMISSION_SESSION_KEY", "permission_dict")
         permission_dict = request.session.get(permission_key, {})
         print("-----取permission_dict", permission_dict)

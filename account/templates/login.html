@@ -157,7 +157,14 @@
                         }
                         console.log("res.msg", res.msg)
                     } else if (res.code === 1000) {
-                        location.href = "/"
+
+                        let nextUrl = getParam("next")
+                        if (nextUrl) {
+                            location.href = nextUrl
+                        } else {
+                            location.href = "/"
+                        }
+
                     }
 
                 }
