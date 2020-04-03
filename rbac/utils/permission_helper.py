@@ -3,7 +3,7 @@ def get_current_menu_id(current_permission_item, permission_dict):
     print("permission_dict", permission_dict)
     permission_id = current_permission_item[0]
     parent_id = current_permission_item[1].get("pid")
-
+    breadcrumb_list=[]
     print("parent_id", parent_id)
     # 父权限有值说明是子权限
     if parent_id:
@@ -12,13 +12,26 @@ def get_current_menu_id(current_permission_item, permission_dict):
         # 如果父权限是菜单，就展开父权限的菜单
         if parent_p.get("is_menu"):
             print("找到了", parent_id)
-            return parent_id
+            breadcrumb_list.extend(
+                [{"title": permission_dict[str(parent_id)]["title"], "url": permission_dict[str(parent_id)]["url"]},
+                 {"title": current_permission_item[1]["title"],
+                  # "url":v["url"]
+                  "url": current_permission_item[1]["url"]
+                  }
+                 ])
+            return parent_id, breadcrumb_list
         # 如果父权限不是菜单，继续找父权限的父权限
         else:
-            return get_current_menu_id((parent_id, parent_p), permission_dict)
+            return get_current_menu_id((parent_id, parent_p), permission_dict, request), breadcrumb_list
     else:
         # pid没值说明是父权限，让父权限的菜单展开
-        return permission_id
+
+        breadcrumb_list.append(
+            {"title": current_permission_item[1]["title"],
+             "url": current_permission_item[1]["url"]
+             }
+        )
+        return permission_id, breadcrumb_list
 
 
 if __name__ == '__main__':
@@ -37,8 +50,8 @@ if __name__ == '__main__':
             'p_alias': 'web:customer_add', 'is_menu': False},
     }
     current_item = (
-    1, {'title': '客户列表', 'url': '/customer/list', 'alias': 'web:customer_list', 'pid': None, 'p_alias': None,
-        'is_menu': True}
+        1, {'title': '客户列表', 'url': '/customer/list', 'alias': 'web:customer_list', 'pid': None, 'p_alias': None,
+            'is_menu': True}
     )
     current_menu_id = get_current_menu_id(current_item, permission_dict)
     print(current_menu_id)

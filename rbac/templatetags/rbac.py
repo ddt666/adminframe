@@ -47,3 +47,8 @@ def has_permission(request, value):
             return True
     else:
         return False
+
+
+@register.inclusion_tag(filename='breadcrumb.html')
+def get_breadcrumb_styles(request):
+    return {"breadcrumb_list": request.breadcrumb_list}
