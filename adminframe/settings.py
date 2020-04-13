@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'rbac.service.middleware.PermissionMiddleware'
+    # 'rbac.service.middleware.PermissionMiddleware'
 ]
 
 ROOT_URLCONF = 'adminframe.urls'
@@ -156,6 +156,7 @@ WHITE_URLS = [
     '/account/login',
     '/account/logout',
     '/account/reg',
+    '/account/iforgot',
     '/account/get_valid_img',
     '/static/.*',
     '/admin/.*',

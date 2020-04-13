@@ -182,7 +182,7 @@
 # BYTE    charset              // DEFAULT_CHARSET (0x01)
 # BYTE    italic               // 0x01 if ITALIC in OS/2 Table fsSelection is set, 0 otherwise
 # ULONG   weight               // OS/2 Table usWeightClass
-# USHORT  fsType               // OS/2 Table fsType (specifies embedding permission flags)
+# USHORT  fsType               // OS/2 Table fsType (specifies embedding rbac flags)
 # USHORT  magicNumber          // Magic number for EOT file - 0x504C.
 # ULONG   unicodeRange1        // OS/2 Table ulUnicodeRange1
 # ULONG   unicodeRange2        // OS/2 Table ulUnicodeRange2

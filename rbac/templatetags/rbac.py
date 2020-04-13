@@ -3,6 +3,7 @@ import copy
 
 from django import template
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -52,3 +53,41 @@ def has_permission(request, value):
 @register.inclusion_tag(filename='breadcrumb.html')
 def get_breadcrumb_styles(request):
     return {"breadcrumb_list": request.breadcrumb_list}
+
+
+@register.simple_tag
+def get_permission_table(all_permission_list):
+    html = ""
+    for p in all_permission_list:
+        html += f'''
+                <tr class="table-primary parent" data-id="{p.get('pk')}" data-pid="{p.get('parent_id')}">
+                    <td>{p.get("title")}</td>
+                    <td>{p.get("url")}</td>
+                    <td>{p.get("alias")}</td>
+                    <td>{p.get("is_menu")}</td>
+                    <td>{p.get("menu__title")}</td>
+                    <td></td>
+                </tr>
+        '''
+        html += digui(p)
+
+    return mark_safe(html)
+
+
+def digui(per):
+    html = ""
+    if per.get("children"):
+        print("per",per.get("children"))
+        for item in per.get("children"):
+            html += f'''
+                                       <tr data-id="{item.get('pk')}"  data-pid="{item.get('parent_id')}">
+                                           <td>{item.get("title")}</td>
+                                           <td>{item.get("url")}</td>
+                                           <td>{item.get("alias")}</td>
+                                           <td>{item.get("is_menu")}</td>
+                                           <td>{item.get("menu__title")}</td>
+                                           <td></td>
+                                       </tr>
+                               '''
+            html += digui(item)
+    return html

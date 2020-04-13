@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block css %}
+
+    {#    <link rel="stylesheet" href="/static/zTree_v3-master/css/zTreeStyle/zTreeStyle.css" type="text/css">#}
+    <link rel="stylesheet" href="/static/zTree_v3-master/css/metroStyle/metroStyle.css" type="text/css">
+    <style>
+        <!--
+        .ztree li {
+            margin: 10px;
+
+        }
+
+        .ztree * {
+            font-size: 16px;
+        }
+
+        -->
+    </style>
+{% endblock %}
+{% block content %}
+    <h1>permission</h1>
+    {% csrf_token %}
+    <ul id="tree" class="ztree" style="width:260px; overflow:auto;"></ul>
+    <button class="btn btn-primary" id="saveBtn">提交</button>
+{% endblock %}
+
+
+
+{% block js %}
+
+    <script type="text/javascript" src="/static/zTree_v3-master/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="/static/zTree_v3-master/js/jquery.ztree.excheck.js"></script>
+    <script>
+        $(function () {
+            getPermissionsTree()
+            $("#saveBtn").on("click", save)
+        });
+
+
+        var zTreeObj;
+        // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+        var setting = {
+            view: {
+                showLine: false
+            },
+            check: {
+                enable: true,
+                chkStyle: "checkbox",
+                chkboxType: {"Y": "ps", "N": "s"}
+            }
+        };
+
+        function getPermissionsTree() {
+
+
+            $.ajax({
+                url: '{% url "rbac:get_permission_tree" %}' + "?role_id=" +{{ role_id }},
+                type: "get",
+                success: function (res) {
+                    console.log(res)
+                    if (res.code === 1000) {
+                        zTreeObj = $.fn.zTree.init($("#tree"), setting, res.data);
+                        zTreeObj.expandAll(true);
+                    }
+                }
+            })
+        }
+
+        function save() {
+
+            let perIds = getCheckPerIds()
+            console.log(this)
+            let saveBtn = $(this)
+            saveBtn.addClass("disabled btn-progress")
+
+            let data = {
+                role_id:{{ role_id }},
+                perIds: perIds,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            }
+
+            $.ajax({
+                url: '{% url "rbac:get_permission_tree" %}',
+                type: "post",
+                data: data,
+                traditional: true,
+                success: function (res) {
+
+                    saveBtn.removeClass("disabled btn-progress")
+                    console.log(res)
+                    if (res.code === 1000) {
+                        swal("权限更新成功", "", "success").then(
+                            function () {
+                                 window.location.reload();
+                            }
+                        );
+                    }
+
+                }
+
+
+            })
+
+        }
+
+        function getCheckPerIds() {
+            let nodes = zTreeObj.getCheckedNodes(true);
+            let perIds = [];
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].level !== 0) {
+                    perIds.push(nodes[i].id)
+                }
+            }
+            return perIds
+
+        }
+
+    </script>
+{% endblock %}

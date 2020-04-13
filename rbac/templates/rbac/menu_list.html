@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block css %}
+    <style>
+        td .btn-group .btn:first-child {
+            border-radius: 30px 0 0 30px !important;
+        }
+
+        td .btn-group .btn:last-child {
+            border-radius: 0 30px 30px 0 !important;
+        }
+
+        tr.menu-active {
+            background-color: #ffa426 !important;
+            color: white;
+        }
+
+        .table td, .table th {
+            vertical-align: middle;
+        }
+
+    .hide{
+        display: none;
+    }
+    tr.parent{
+        cursor: pointer;
+    }
+
+
+    </style>
+{% endblock %}
+{% block content %}
+
+
+
+    <h1>menu</h1>
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h4>菜单管理</h4>
+                    <div class="card-header-action">
+                        <a class="btn btn-icon icon-left btn-primary" href="{% url 'rbac:add_menu' %}"><i
+                                class="fa fa-plus"></i> 新建</a>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+
+                            <th scope="col">标题</th>
+                            <th scope="col">图标</th>
+                            <th scope="col">权重</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in menu_query %}
+                            <tr class="{% if item.id|safe == request.GET.menu_id %}menu-active{% else %}{% endif %}">
+
+                                <td>{{ item.title }}</td>
+                                <td><i class="fa {{ item.icon }}"></i></td>
+                                <td>{{ item.weight }}</td>
+                                <td>
+
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'rbac:edit_menu' item.pk %}" class="btn btn-info"
+                                           data-toggle="tooltip" data-placement="top" title="编辑菜单"><i
+                                                class="far fa-edit text-white"></i></a>
+                                        <button class="btn btn-danger" data-toggle="tooltip" data-placement="top"
+                                                title="删除菜单">
+                                            <i class="fa fa-trash-alt text-white delete" style="cursor: pointer"
+                                               data-id="{{ item.id }}"></i></button>
+                                        <a href="{% url 'rbac:menu_list' %}?menu_id={{ item.id }}"
+                                           class="btn btn-warning" data-toggle="tooltip" data-placement="top"
+                                           title="权限管理"><i class="fa fa-sitemap"></i></a>
+                                    </div>
+
+
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h4>权限管理</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+
+                            <th scope="col">标题</th>
+                            <th scope="col">url</th>
+                            <th scope="col">url别名</th>
+                            <th scope="col">菜单</th>
+                            <th scope="col">所属菜单</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% load rbac %}
+
+                        {% get_permission_table all_permission_list %}
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            $(".delete").on("click", function () {
+
+                let dataId = $(this).attr("data-id")
+                deleteMenu(dataId)
+            })
+            $(".parent").on("click",function () {
+                let id=$(this).attr("data-id")
+                if ($(this).nextAll("tr[data-pid="+id+"]").hasClass("hide"))
+                {
+                    $(this).nextAll("tr[data-pid="+id+"]").removeClass("hide")
+                }
+                else{
+                    $(this).nextAll("tr[data-pid="+id+"]").addClass("hide")
+                }
+            })
+        })
+
+        function deleteMenu(menu_id) {
+
+            swal({
+                title: '确认删除吗?',
+                icon: 'warning',
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    let data = {
+                        menu_id: menu_id,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    }
+                    $.ajax({
+                        url: "{% url 'rbac:del_menu' %}",
+                        data: data,
+                        type: "post",
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code === 1000) {
+                                swal('删除成功！', {
+                                    buttons: false,
+                                    icon: 'success',
+                                    timer: 1000,
+                                }).then(
+                                    function () {
+                                        window.location.reload()
+                                    }
+                                );
+                            }
+
+                        }
+                    })
+
+
+                }
+            });
+
+        }
+    </script>
+{% endblock %}

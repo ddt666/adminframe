@@ -59,7 +59,7 @@ def login(request):
                 res.msg = "登录成功"
 
                 # 用户权限初始化
-                permission.init(request.user, request)
+                # rbac.init(request.user, request)
 
                 return JsonResponse(res.dict)
             else:

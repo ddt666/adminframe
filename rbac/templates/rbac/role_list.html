@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block css %}
+
+    {#    <link rel="stylesheet" href="/static/zTree_v3-master/css/zTreeStyle/zTreeStyle.css" type="text/css">#}
+    <link rel="stylesheet" href="/static/zTree_v3-master/css/metroStyle/metroStyle.css" type="text/css">
+    <style>
+        {#.ztree li {#}
+        {#margin: 5px;#}
+        {#}#}
+
+        {#.ztree * {#}
+        {#    font-size: 14px;#}
+        {#}#}
+    </style>
+{% endblock %}
+{% block content %}
+    <table class="table table-striped table-md">
+        <tbody>
+        <tr>
+            <th>#</th>
+            <th>角色名称</th>
+            <th>相关权限</th>
+        </tr>
+        {% for role in queryset %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ role.name }}</td>
+                <td>
+{#                    <span style="cursor: pointer;text-decoration: underline;color: #6777ef;">{{ role.permissions.count }}</span>#}
+                    <a href="{% url 'rbac:role_permission' role.id %}" class="badge badge-info">{{ role.permissions.count }}</a>
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    <ul id="tree" class="ztree" style="width:260px; overflow:auto;"></ul>
+{% endblock %}
+
+{% block js %}
+
+    <script type="text/javascript" src="/static/zTree_v3-master/js/jquery.ztree.core.js"></script>
+    <script>
+        var zTreeObj;
+        // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+        var setting = {
+            view: {
+                fontCss: {fontsize: "20px"},
+                showIcon: false
+            }
+        };
+        // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
+        var zNodes = [
+            {
+                name: "test1", open: true, children: [
+                    {name: "test1_1"}, {name: "test1_2"}]
+            },
+            {
+                name: "test2", open: true, children: [
+                    {name: "test2_1"}, {name: "test2_2"}]
+            }
+        ];
+        $(document).ready(function () {
+            zTreeObj = $.fn.zTree.init($("#tree"), setting, zNodes);
+        });
+    </script>
+{% endblock %}

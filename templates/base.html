@@ -60,8 +60,8 @@
                 <div class="sidebar-brand sidebar-brand-sm">
                     <a href="index.html">St</a>
                 </div>
-                {% load rbac %}
-                {% show_menu request %}
+{#                {% load rbac %}#}
+{#                {% show_menu request %}#}
                 <ul class="sidebar-menu">
                     {% for item in request.session.menu_dict.values %}
                         <li class="dropdown">
@@ -97,6 +97,15 @@
                         </ul>
                     </li>
 
+                     <li class="dropdown">
+                        <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>权限</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a class="nav-link" href=" {% url 'rbac:role_list' %}">角色管理</a></li>
+                            <li><a class="nav-link" href=" {% url 'rbac:menu_list' %}">菜单权限管理</a></li>
+
+                        </ul>
+                    </li>
+
                 </ul>
 
                 <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
@@ -112,7 +121,7 @@
 
             <section class="section">
                 <div class="section-header">
-                    {% get_breadcrumb_styles request %}
+{#                    {% get_breadcrumb_styles request %}#}
 
                 </div>
 
